@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>まるロジ</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  </head>
+  <body>
+    <div id="user_info">
+      <p>ユーザー情報</p>
+    </div>
+
+    <h1>まるロジ</h1>
+    <form>
+      <button id="readData" type="button">参照</button><br>
+    </form>
+    
+    <div id="msg"></div>
+
+    <ul id="speech_list">
+      <!-- ここに出力 -->
+    </ul>
+
+    <script src="https://www.gstatic.com/firebasejs/5.8.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.8.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.3.1/firebase.js"></script>
+    <script type="module">
+      // Import the functions you need from the SDKs you need
+      // import { initializeApp } from "https://www.gstatic.com/firebasejs/9.9.0/firebase-app.js";
+      // import { getFirestore, collection, getDocs } from 'firebase/firestore/lite';
+      import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.8.4/firebase-app.js'
+      import { getFirestore, collection, getDocs } from 'https://www.gstatic.com/firebasejs/9.8.4/firebase-firestore.js'
+      
+      
+      // TODO: Add SDKs for Firebase products that you want to use
+      // https://firebase.google.com/docs/web/setup#available-libraries
+    
+      // Your web app's Firebase configuration
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyDnqd8LipuM8KtVbEOO_JB27A4aHSjVJgA",
+        authDomain: "marulogi-e717f.firebaseapp.com",
+        projectId: "marulogi-e717f",
+        storageBucket: "marulogi-e717f.appspot.com",
+        messagingSenderId: "330645834312",
+        appId: "1:330645834312:web:c1416a49c683df17f6667d"
+      };
+    
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      firebase.initializeApp(firebaseConfig);
+
+      const db = getFirestore(app);
+      // var docRef = db.collection('marulogi').doc('A53mTEhydF8UtSYt32Kg');
+
+      async function displaySpeech(db) {
+        var speechCol = collection(db, 'marulogi');
+        var speechSnapshot = await getDocs(speechCol);
+        var speechList = speechSnapshot.docs.map(doc => doc.data());
+        for(var i in speechList) {
+          var text = '<p>' + speechList[i]["word"] + '</p>';
+          $('#speech_list').append(text);
+        };
+      };
+
+      var btn = document.getElementById('readData');
+      btn.addEventListener("click", ()=>{
+        var speechList = displaySpeech(db);
+        console.log(speechList);
+      });  
+
+      
+      window.addEventListener('load', function(){
+        firebase.auth().onAuthStateChanged(user => {
+          if (user) {
+            // User is signed in, see docs for a list of available properties
+            // https://firebase.google.com/docs/reference/js/firebase.User
+            const user_email = user.email;
+            var text = '<p>' + user_email + '</p>';
+            $('#user_info').append(text);
+            // ...
+          } else {
+            window.location.href = '/index.html';
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
+
